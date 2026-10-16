@@ -1,28 +1,202 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Haiku 사진 삽입 E2E</title>
-  <style>
-    body { margin: 0; padding: 24px; font-family: sans-serif; }
-    main { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; max-width: 1000px; }
-    #clinic-photo { min-height: 160px; padding: 24px; background: #dbeafe; border: 2px solid #2563eb; }
-    @media (max-width: 600px) { main { grid-template-columns: 1fr; } }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>○○치과</title>
+<style>
+  :root {
+    --ink: #1f2a37;
+    --muted: #5b6573;
+    --surface: #ffffff;
+    --soft: #f4f7f9;
+    --accent: #1f7a8c;
+    --accent-ink: #ffffff;
+    --line: #dfe6ec;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: "Malgun Gothic", "Apple SD Gothic Neo", system-ui, sans-serif;
+    color: var(--ink);
+    background: var(--surface);
+    line-height: 1.6;
+    word-break: keep-all;
+    overflow-wrap: break-word;
+  }
+  a { color: inherit; }
+  :focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+  .wrap { max-width: 1040px; margin: 0 auto; padding: 0 20px; }
+  section { padding: 56px 0; scroll-margin-top: 72px; }
+  h1, h2, h3 { line-height: 1.3; margin: 0 0 14px; }
+  h1 { font-size: 32px; }
+  h2 { font-size: 24px; }
+  p { margin: 0 0 12px; color: var(--muted); }
+
+  /* 맨 위 메뉴 줄 */
+  .topbar {
+    position: sticky; top: 0; z-index: 10;
+    background: var(--surface); border-bottom: 1px solid var(--line);
+  }
+  .topbar .wrap { display: flex; align-items: center; justify-content: space-between; min-height: 64px; }
+  .brand { font-weight: 700; font-size: 18px; text-decoration: none; }
+  .menu { display: flex; gap: 6px; flex-wrap: wrap; }
+  .menu a {
+    display: inline-flex; align-items: center; min-height: 44px; padding: 0 12px;
+    text-decoration: none; color: var(--ink); border-radius: 8px;
+    transition: background 200ms ease;
+  }
+  .menu a:hover { background: var(--soft); cursor: pointer; }
+
+  /* 첫 화면 */
+  .hero { background: var(--soft); }
+  .hero-photo {
+    width: 100%; aspect-ratio: 16 / 9; border-radius: 14px;
+    background: repeating-linear-gradient(45deg, #e3e9ee, #e3e9ee 12px, #eef2f5 12px, #eef2f5 24px);
+    display: flex; align-items: center; justify-content: center; color: var(--muted); font-size: 15px;
+    margin-top: 20px;
+  }
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-height: 44px; min-width: 44px; padding: 0 20px; border-radius: 8px;
+    background: var(--accent); color: var(--accent-ink); text-decoration: none;
+    font-weight: 700; transition: opacity 200ms ease;
+  }
+  .btn:hover { opacity: 0.9; cursor: pointer; }
+  .btn-line { background: transparent; color: var(--accent); border: 2px solid var(--accent); }
+  .cta-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 20px; }
+  .tel { color: var(--accent); font-weight: 700; text-decoration: none; }
+
+  /* 카드 */
+  .cards { display: grid; gap: 16px; grid-template-columns: 1fr; margin-top: 20px; }
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 24px; }
+  .card h3 { font-size: 19px; }
+  .card a { color: var(--accent); font-weight: 700; text-decoration: none; }
+
+  /* 진료시간 표 */
+  .hours { width: 100%; border-collapse: collapse; margin-top: 16px; }
+  .hours th, .hours td { text-align: left; padding: 12px; border-bottom: 1px solid var(--line); }
+  .hours th { color: var(--ink); width: 40%; }
+
+  /* 상담 문의 줄 */
+  .contact-bar { background: var(--soft); border-radius: 14px; padding: 20px; margin-top: 20px; display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
+
+  /* 맨 아래 정보 */
+  footer { background: var(--ink); color: #d6dde4; padding: 40px 0; }
+  footer p { color: #d6dde4; margin: 0 0 6px; font-size: 14px; }
+
+  @media (min-width: 768px) {
+    h1 { font-size: 38px; }
+    .cards { grid-template-columns: repeat(3, 1fr); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; }
+  }
+</style>
 </head>
 <body>
-  <h1>우리 치과 소개</h1>
-  <main>
-    <section><h2>진료 안내</h2><p>사진을 넣을 위치를 선택해 주세요.</p></section>
-    <button id="clinic-photo" type="button"><img src="images/insertion.png" alt="치과 소개 샘플 사진(E2E용)" style="display:block;width:100%;height:auto"></button>
-  </main>
-  <output id="actions">0</output>
-  <script>
-    document.getElementById('clinic-photo').addEventListener('click', () => {
-      const output = document.getElementById('actions');
-      output.textContent = String(Number(output.textContent) + 1);
-    });
-  </script>
+
+<header class="topbar">
+  <div class="wrap">
+    <a class="brand" href="#top">○○치과</a>
+    <nav class="menu" aria-label="주요 메뉴">
+      <a href="#about">병원 소개</a>
+      <a href="#treatment">진료 안내</a>
+      <a href="prosthetics.html">보철 치료</a>
+      <a href="#location">오시는 길</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <!-- 첫 화면 -->
+  <section class="hero" id="top">
+    <div class="wrap">
+      <h1>○○치과에 오신 것을 환영합니다</h1>
+      <p>꼼꼼한 상담과 충분한 설명으로 편안하게 치료받으실 수 있도록 돕겠습니다.</p>
+      <div class="cta-row">
+        <a class="btn" href="#location">오시는 길 보기</a>
+        <a class="btn btn-line" href="#treatment">진료 안내 보기</a>
+      </div>
+      <div class="hero-photo" role="img" aria-label="병원 사진 자리">병원 사진 (자리표시자)</div>
+    </div>
+  </section>
+
+  <!-- 병원 소개 -->
+  <section id="about">
+    <div class="wrap">
+      <h2>병원 소개</h2>
+      <p>치료 과정을 투명하게 설명드리고, 환자분의 상태에 맞춰 계획을 세웁니다.</p>
+      <div class="cards">
+        <article class="card">
+          <h3>꼼꼼한 상담</h3>
+          <p>치료 전에 상태와 방법, 기간을 충분히 설명드립니다.</p>
+        </article>
+        <article class="card">
+          <h3>편안한 진료 환경</h3>
+          <p>긴장을 줄이는 진료실 환경을 준비했습니다.</p>
+        </article>
+        <article class="card">
+          <h3>투명한 안내</h3>
+          <p>치료 과정과 비용을 미리 알려 드립니다.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- 진료 안내 -->
+  <section id="treatment" style="background: var(--soft);">
+    <div class="wrap">
+      <h2>진료 안내</h2>
+      <div class="cards">
+        <article class="card">
+          <h3>일반 진료</h3>
+          <p>충치, 잇몸, 정기 검진 등 기본적인 치아 건강을 살핍니다.</p>
+          <a href="prosthetics.html">보철 치료 보기 →</a>
+        </article>
+        <article class="card">
+          <h3>임플란트</h3>
+          <p>빠진 치아를 자연치아에 가깝게 회복하는 치료입니다.</p>
+        </article>
+        <article class="card">
+          <h3>교정 · 심미</h3>
+          <p>치아 배열과 미소 라인을 함께 고려해 계획합니다.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- 오시는 길 -->
+  <section id="location">
+    <div class="wrap">
+      <h2>오시는 길</h2>
+      <p>주소: ○○시 ○○구 ○○로 00 (○○빌딩 0층)</p>
+      <table class="hours" aria-label="진료시간">
+        <!-- 여기고치기: 진료시간 -->
+        <tr><th scope="row">평일</th><td>09:30~18:30</td></tr>
+        <tr><th scope="row">토요일</th><td>09:30~13:00</td></tr>
+        <tr><th scope="row">일요일 · 공휴일</th><td>휴진</td></tr>
+      </table>
+      <p>점심시간 13:00~14:00</p>
+      <div class="contact-bar">
+        <div>
+          <strong>진료 상담 문의</strong>
+          <p><a class="tel" data-phone>010-8285-6670</a></p>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p><strong>○○치과</strong> · 대표원장 ○○○</p>
+    <p>사업자등록번호 000-00-00000 · 개인정보 처리방침</p>
+    <p>© ○○치과. All rights reserved.</p>
+  </div>
+</footer>
+
+<!-- 화면의 전화번호만 고치면 누를 때 거는 번호도 같이 바뀝니다 -->
+<script>document.querySelectorAll("a[data-phone]").forEach(a => a.href = "tel:" + a.textContent.replace(/[^0-9]/g, ""));</script>
 </body>
 </html>
